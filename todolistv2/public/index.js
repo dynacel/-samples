@@ -1,0 +1,1 @@
+$("#newItemField").focus();
