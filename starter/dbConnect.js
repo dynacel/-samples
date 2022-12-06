@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const dbName = "todolistDB"
+const Admin = mongoose.mongo.Admin;
+const dbName = "test"
 const mongoServer = `mongodb://127.0.0.1/${dbName}`;
 const consoleColor = { green: '\x1b[42m%s\x1b[0m', yellow: '\x1b[43m%s\x1b[0m', red: '\x1b[41m%s\x1b[0m' };
 
@@ -10,6 +11,7 @@ exports.connectMongoose = async () => {
             console.log(error.reason.error.cause)
         });
     await this.checkState()
+    this.checkDatabase(dbName)
 }
 
 exports.checkState = async () => {
@@ -26,5 +28,18 @@ exports.checkState = async () => {
         } else {
             console.log(consoleColor.red, `Mongoose is ${mongooseState}.`);
         }
+    });
+}
+
+exports.checkDatabase = (requestedDb) => {
+    connection = mongoose.createConnection(mongoServer)
+    connection.on('open', () => {
+        new Admin(connection.db).listDatabases((err, databaseList) => {
+            if (databaseList.databases.some(database => database.name === requestedDb)) {
+                console.log(consoleColor.green, `Successfully connected to ${requestedDb} database.`)
+            } else {
+                    console.log(consoleColor.yellow, `${requestedDb} database not found, it will be created on use.`)
+                }
+        });
     });
 }
