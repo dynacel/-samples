@@ -1,12 +1,19 @@
-const express = require('express')
-const info = require(`./package.json`)
-const dbConnect = require(__dirname + '/dbconnect')
+import express from 'express'
+import bodyParser from 'body-parser'
+import _ from 'lodash'
+import * as dbConnect from './dbconnect.js'
+import * as consoleColor from './consoleColors.js'
 
-dbConnect.connectMongoose()
+const app = express();
+const port = 3000;
 
-const app = express()
-const port = 3000
-const consoleColor = { green: '\x1b[42m%s\x1b[0m', yellow: '\x1b[43m%s\x1b[0m', red: '\x1b[41m%s\x1b[0m' };
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.set('view engine', 'ejs');
+
+dbConnect.connectMongoose();
 
 app.get('/', (req, res) => res.send('Hello World!'))
-app.listen(port, () => console.log(consoleColor.green, `${info.name} app listening on port ${port}!`))
+app.listen(port, () => {
+    console.log(consoleColor.BGgreen, `App listening on port ${port}!`)
+})
