@@ -8,7 +8,7 @@ import * as dbConnect from './dbconnect.js';
 const app = express();
 const port = 3000;
 const mongoServer = 'mongodb://127.0.0.1/';
-const dbName = '';
+const dbName = 'this';
 
 dotenv.config();
 app.use(express.static('public'));

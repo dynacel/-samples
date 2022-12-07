@@ -30,18 +30,18 @@ export const checkState = async () => {
     });
 }
 
-export const checkDatabase = (serverAddress, database) => {
+export const checkDatabase = (serverAddress, dbName) => {
     const Admin = mongoose.mongo.Admin;
     const connection = mongoose.createConnection(serverAddress)
     connection.on('open', () => {
         new Admin(connection.db).listDatabases((err, results) => {
             const databaseList = results.databases
-            if (databaseList.some(database => database.name === database)) {
-                console.log(consoleColor.green, `Successfully connected to "${database}" database.`)
-            } else if (typeof (database) === 'undefined' || database.split(" ").join("") === '') {
+            if (databaseList.some(database => database.name === dbName)) {
+                console.log(consoleColor.green, `Successfully connected to "${dbName}" database.`)
+            } else if (typeof (dbName) === 'undefined' || dbName.split(" ").join("") === '') {
                 console.log(consoleColor.red, 'No database specified.')
             } else {
-                console.log(consoleColor.yellow, `"${database}" database not found, it will be created on use.`)
+                console.log(consoleColor.yellow, `"${dbName}" database not found, it will be created on use.`)
             }
         });
     });
