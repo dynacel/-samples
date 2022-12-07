@@ -1,17 +1,18 @@
 import mongoose from 'mongoose'
 import * as consoleColor from './consoleColors.js'
+mongoose.set('strictQuery', false)
 
-const dbName = ""
-const mongoServer = `mongodb://127.0.0.1/${dbName}`;
-
-export const connectMongoose = async () => {
-    await mongoose.connect(mongoServer, { useNewUrlParser: true })
+export const connectMongoose = async (serverAddress, database) => {
+    console.log(`Mongoose is connecting to ${serverAddress}`)
+    await mongoose.connect((serverAddress + database), { useNewUrlParser: true })
         .catch((error) => {
-            console.log(consoleColor.red, "Mongoose failed to connect.");
-            console.log(error.reason.error.cause)
+            console.log(error)
+            console.log(consoleColor.red, `Mongoose failed to connect to ${serverAddress}.`);
         });
     await checkState()
-    checkDatabase(dbName)
+    checkDatabase(serverAddress, database)
+    const mongooseState = mongoose.STATES[mongoose.connection.readyState];
+    return mongooseState
 }
 
 export const checkState = async () => {
@@ -31,18 +32,18 @@ export const checkState = async () => {
     });
 }
 
-export const checkDatabase = (requestedDb) => {
+export const checkDatabase = (serverAddress, database) => {
     const Admin = mongoose.mongo.Admin;
-    const connection = mongoose.createConnection(mongoServer)
+    const connection = mongoose.createConnection(serverAddress)
     connection.on('open', () => {
         new Admin(connection.db).listDatabases((err, results) => {
             const databaseList = results.databases
-            if (databaseList.some(database => database.name === requestedDb)) {
-                console.log(consoleColor.green, `Successfully connected to "${requestedDb}" database.`)
-            } else if (requestedDb.split(" ").join("") === '' || requestedDb === null || typeof (requestedDb) === 'undefined') {
+            if (databaseList.some(database => database.name === database)) {
+                console.log(consoleColor.green, `Successfully connected to "${database}" database.`)
+            } else if (typeof (database) === 'undefined' || database.split(" ").join("") === '') {
                 console.log(consoleColor.red, 'No database specified.')
             } else {
-                console.log(consoleColor.yellow, `"${requestedDb}" database not found, it will be created on use.`)
+                console.log(consoleColor.yellow, `"${database}" database not found, it will be created on use.`)
             }
         });
     });
