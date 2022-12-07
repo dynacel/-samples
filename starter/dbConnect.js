@@ -11,8 +11,6 @@ export const connectMongoose = async (serverAddress, database) => {
         });
     await checkState()
     checkDatabase(serverAddress, database)
-    const mongooseState = mongoose.STATES[mongoose.connection.readyState];
-    return mongooseState
 }
 
 export const checkState = async () => {
