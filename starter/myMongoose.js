@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import chalk from 'chalk'
 mongoose.set('strictQuery', false)
 
-export const connectMongoose = async (serverAddress, database) => {
+export const connect = async (serverAddress, database) => {
     console.log(`Mongoose is connecting to ${serverAddress}`)
     await mongoose.connect((serverAddress + database), { useNewUrlParser: true })
         .catch((error) => {
